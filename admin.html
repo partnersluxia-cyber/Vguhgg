@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Админ-панель | MetroDrop</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="supabase.js"></script>
+	<style>
+		html { scroll-behavior: smooth; }
+
+		.admin-body {
+			background: #0b1118;
+			color: #e6ecee;
+		}
+
+		.admin-shell {
+			position: relative;
+			z-index: 1;
+			width: min(1180px, calc(100% - 32px));
+			margin: 0 auto;
+			padding: 34px 0 56px;
+		}
+
+		.admin-topbar,
+		.admin-panel,
+		.admin-stat {
+			border: 1px solid rgba(149, 161, 169, .3);
+			background: rgba(12, 20, 26, .88);
+			box-shadow: 0 14px 32px rgba(0, 0, 0, .28);
+		}
+
+		.admin-topbar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 20px;
+			padding: 18px 22px;
+			margin-bottom: 22px;
+		}
+
+		.admin-kicker {
+			margin: 0 0 6px;
+			color: #e6bd68;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 2px;
+		}
+
+		.admin-title {
+			margin: 0;
+			font-size: clamp(24px, 4vw, 36px);
+			letter-spacing: 1px;
+		}
+
+		.admin-back {
+			color: #f0c979;
+			font-size: 12px;
+			font-weight: 700;
+			letter-spacing: 1px;
+			text-decoration: none;
+		}
+
+		.admin-nav {
+			display: flex;
+			gap: 8px;
+			margin: -8px 0 22px;
+		}
+
+		.admin-nav button {
+			padding: 10px 15px;
+			border: 1px solid rgba(149, 161, 169, .32);
+			border-radius: 3px;
+			background: rgba(28, 39, 45, .7);
+			color: #d8e0e2;
+			font-size: 11px;
+			font-weight: 800;
+			letter-spacing: 1px;
+			font-family: inherit;
+			text-decoration: none;
+			cursor: pointer;
+			transition: border-color .18s ease, color .18s ease, background .18s ease;
+		}
+
+		.admin-nav button:hover,
+		.admin-nav button:focus-visible,
+		.admin-nav button.is-active {
+			border-color: rgba(240, 201, 121, .75);
+			background: rgba(216, 173, 88, .16);
+			color: #f0c979;
+		}
+
+		.admin-stats {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 14px;
+			margin-bottom: 22px;
+		}
+
+		.admin-stat {
+			padding: 18px;
+		}
+
+		.admin-stat-label {
+			color: #95a1a9;
+			font-size: 11px;
+			letter-spacing: 1px;
+		}
+
+		.admin-stat-value {
+			display: block;
+			margin-top: 8px;
+			color: #f0c979;
+			font-size: 28px;
+		}
+
+		.admin-grid {
+			display: grid;
+			grid-template-columns: minmax(240px, .7fr) minmax(0, 1.3fr);
+			gap: 22px;
+		}
+
+		.admin-panel {
+			padding: 22px;
+		}
+
+		.admin-panel-wide {
+			grid-column: 1 / -1;
+		}
+
+		.workbench-content-row {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 150px 110px auto;
+			gap: 8px;
+			align-items: end;
+			padding: 10px;
+			border: 1px solid rgba(149, 161, 169, .2);
+			background: rgba(28, 39, 45, .5);
+		}
+
+		@media (max-width: 720px) {
+			.workbench-content-row { grid-template-columns: 1fr; }
+		}
+
+		.promo-generator-fields {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.promo-code-value {
+			font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+			letter-spacing: 1px;
+		}
+
+		@media (max-width: 720px) {
+			.promo-generator-fields { grid-template-columns: 1fr; }
+		}
+
+		.admin-panel h2 {
+			margin: 0 0 18px;
+			font-size: 18px;
+			letter-spacing: 1px;
+		}
+
+		.admin-form {
+			display: grid;
+			gap: 12px;
+		}
+
+		.admin-form label {
+			display: grid;
+			gap: 6px;
+			color: #aeb9bd;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 1px;
+		}
+
+		.admin-form input,
+		.admin-form textarea,
+		.admin-form select {
+			width: 100%;
+			padding: 11px 12px;
+			border: 1px solid rgba(149, 161, 169, .38);
+			border-radius: 3px;
+			background: #101a21;
+			color: #e6ecee;
+			font: inherit;
+		}
+
+		.admin-form textarea {
+			min-height: 82px;
+			resize: vertical;
+		}
+
+		.admin-button {
+			padding: 12px 16px;
+			border: 1px solid rgba(243, 195, 93, .82);
+			border-radius: 3px;
+			background: linear-gradient(180deg, #dcae52, #9b6827);
+			color: #17130d;
+			font-weight: 800;
+			letter-spacing: 1px;
+			cursor: pointer;
+		}
+
+		.admin-list {
+			display: grid;
+			gap: 10px;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		.admin-list-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 12px;
+			border: 1px solid rgba(149, 161, 169, .2);
+			background: rgba(28, 39, 45, .6);
+		}
+
+		.admin-list-item strong {
+			display: block;
+			margin-bottom: 4px;
+		}
+
+		.admin-list-item small {
+			color: #95a1a9;
+		}
+
+		.admin-delete {
+			border: 0;
+			background: transparent;
+			color: #e58b6d;
+			cursor: pointer;
+		}
+
+		.admin-empty {
+			margin: 0;
+			color: #95a1a9;
+			font-size: 13px;
+		}
+
+		.admin-content-builder {
+			display: grid;
+			gap: 10px;
+		}
+
+		.case-edit-tabs {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 14px;
+		}
+
+		.case-edit-tabs button {
+			padding: 9px 12px;
+			border: 1px solid rgba(149, 161, 169, .28);
+			border-radius: 3px;
+			background: rgba(28, 39, 45, .7);
+			color: #aeb9bd;
+			font-size: 10px;
+			font-weight: 800;
+			letter-spacing: .8px;
+			cursor: pointer;
+		}
+
+		.case-edit-tabs button.is-active {
+			border-color: rgba(240, 201, 121, .75);
+			background: rgba(216, 173, 88, .16);
+			color: #f0c979;
+		}
+
+		.case-edit-section {
+			display: grid;
+			gap: 12px;
+		}
+
+		.case-edit-section[hidden],
+		.case-edit-tabs[hidden] {
+			display: none !important;
+		}
+
+		.admin-content-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 8px;
+			padding: 10px;
+			border: 1px solid rgba(149, 161, 169, .2);
+			background: rgba(28, 39, 45, .5);
+		}
+
+		.admin-content-row input,
+		.admin-content-row select {
+			min-width: 0;
+		}
+
+		.admin-content-row {
+			grid-template-columns: minmax(0, 1fr) 112px;
+		}
+
+		.admin-content-data {
+			display: grid;
+			gap: 8px;
+		}
+
+		.admin-content-media {
+			display: grid;
+			gap: 5px;
+			justify-items: center;
+		}
+
+		.admin-content-preview {
+			width: 78px;
+			height: 78px;
+			border: 1px solid rgba(149, 161, 169, .24);
+			background: rgba(7, 12, 17, .72);
+			object-fit: contain;
+		}
+
+		.admin-content-row .admin-delete {
+			grid-column: 1 / -1;
+			justify-self: start;
+		}
+
+		@media (max-width: 720px) {
+			.admin-shell { width: min(100% - 20px, 560px); padding-top: 20px; }
+			.admin-topbar { align-items: flex-start; flex-direction: column; }
+			.admin-stats,
+			.admin-grid { grid-template-columns: 1fr; }
+			.admin-panel-wide { grid-column: auto; }
+		}
+	</style>
+</head>
+<body class="admin-body">
+	<div class="admin-shell">
+		<header class="admin-topbar">
+			<div>
+				<p class="admin-kicker">METRODROP / CONTROL ROOM</p>
+				<h1 class="admin-title">АДМИН-ПАНЕЛЬ</h1>
+			</div>
+			<a class="admin-back" href="home.html">НА ГЛАВНУЮ</a>
+		</header>
+		<nav class="admin-nav" aria-label="Разделы админ-панели">
+			<button type="button" data-admin-view="sections">РАЗДЕЛЫ</button>
+			<button type="button" data-admin-view="cases">КЕЙСЫ</button>
+			<button type="button" data-admin-view="players">ПОЛЬЗОВАТЕЛИ</button>
+			<button type="button" data-admin-view="promos">ПРОМОКОДЫ</button>
+			<button type="button" data-admin-view="workbench">ВЕРСТАК</button>
+		</nav>
+
+		<section class="admin-stats" aria-label="Статистика">
+			<div class="admin-stat"><span class="admin-stat-label">РАЗДЕЛЫ</span><strong class="admin-stat-value" data-stat="sections">0</strong></div>
+			<div class="admin-stat"><span class="admin-stat-label">КЕЙСЫ</span><strong class="admin-stat-value" data-stat="cases">0</strong></div>
+			<div class="admin-stat"><span class="admin-stat-label">ПОЛЬЗОВАТЕЛИ</span><strong class="admin-stat-value" data-stat="players">0</strong></div>
+		</section>
+
+		<div class="admin-grid">
+			<section class="admin-panel admin-section-view" id="sectionCreatePanel">
+				<h2>НОВЫЙ РАЗДЕЛ</h2>
+				<form class="admin-form" id="sectionForm">
+					<label>НАЗВАНИЕ<input name="name" required placeholder="Например: ОСНОВНЫЕ КЕЙСЫ"></label>
+					<label>ОПИСАНИЕ<textarea name="description" placeholder="Короткое описание раздела"></textarea></label>
+					<button class="admin-button" type="submit">СОЗДАТЬ РАЗДЕЛ</button>
+				</form>
+			</section>
+
+			<section class="admin-panel admin-case-view" id="caseCreatePanel">
+				<h2>НОВЫЙ КЕЙС</h2>
+				<div class="case-edit-tabs" id="caseEditTabs" hidden>
+					<button type="button" data-edit-tab="info">ИНФОРМАЦИЯ КЕЙСА</button>
+					<button type="button" data-edit-tab="contents">СОДЕРЖИМОЕ КЕЙСА</button>
+				</div>
+				<form class="admin-form" id="caseForm">
+					<div class="case-edit-section" id="caseInfoFields">
+						<label>НАЗВАНИЕ<input name="name" required placeholder="Например: НОЧНОЙ РЕЙД"></label>
+						<label>РАЗДЕЛ<select name="sectionId" id="caseSection" required><option value="">Сначала создайте раздел</option></select></label>
+						<label>ИКОНКА КЕЙСА<input name="imageFile" type="file" accept="image/*"></label>
+						<label>ЦЕНА<input name="price" type="number" min="0" step="1" required placeholder="100"></label>
+						<label>ОПИСАНИЕ<textarea name="description" placeholder="Описание кейса"></textarea></label>
+					</div>
+					<div class="case-edit-section" id="caseContentsPanel">
+						<label>СОДЕРЖИМОЕ КЕЙСА</label>
+						<div class="admin-content-builder" id="caseContents"></div>
+						<button class="admin-button" id="addContentItem" type="button">+ ДОБАВИТЬ ПРЕДМЕТ</button>
+					</div>
+					<button class="admin-button" id="caseSubmitButton" type="submit">СОЗДАТЬ КЕЙС</button>
+					<button class="admin-button" id="cancelCaseEdit" type="button" hidden>ОТМЕНА РЕДАКТИРОВАНИЯ</button>
+				</form>
+			</section>
+
+			<section class="admin-panel admin-section-view" id="sectionsPanel">
+				<h2>РАЗДЕЛЫ КЕЙСОВ</h2>
+				<ul class="admin-list" id="sectionsList"></ul>
+				<p class="admin-empty" id="sectionsEmpty">Разделов пока нет.</p>
+			</section>
+
+			<section class="admin-panel admin-case-view" id="casesPanel">
+				<h2>КЕЙСЫ</h2>
+				<ul class="admin-list" id="casesList"></ul>
+				<p class="admin-empty" id="casesEmpty">Кейсов пока нет.</p>
+			</section>
+
+			<section class="admin-panel admin-player-view" id="playersPanel">
+				<h2>ПОЛЬЗОВАТЕЛИ</h2>
+				<div class="admin-form" style="margin-bottom: 12px;">
+					<label>ПОИСК
+						<input id="playerSearch" type="search" placeholder="Имя или ID пользователя">
+					</label>
+				</div>
+				<ul class="admin-list" id="playersList"></ul>
+				<p class="admin-empty" id="playersEmpty">Пользователей пока нет.</p>
+			</section>
+
+			<section class="admin-panel admin-player-view" id="playerEditorPanel">
+				<h2>РЕДАКТИРОВАНИЕ ПОЛЬЗОВАТЕЛЯ</h2>
+				<form class="admin-form" id="playerForm">
+					<label>ID<input id="playerIdField" name="playerId" readonly></label>
+					<label>ИМЯ<input name="playerName" required></label>
+					<label>ПАРОЛЬ<input name="playerPassword" required></label>
+					<label>БАЛАНС<input name="playerBalance" type="number" min="0" step="1"></label>
+					<label>UC<input name="playerUc" type="number" min="0" step="1"></label>
+					<label>TIME CARDS<input name="playerTimeCards" type="number" min="0" step="1"></label>
+					<label>ВАЛЮТА<select name="playerCurrencyMode"><option value="metro">метро</option><option value="uc">uc</option></select></label>
+					<label>ИНВЕНТАРЬ<textarea name="playerInventory" placeholder='[{"name":"РЮКЗАК","image":"items/backpack_4.png","rarity":"epic"}]'></textarea></label>
+					<div style="display:flex; gap: 8px; flex-wrap: wrap;">
+						<button class="admin-button" type="submit">СОХРАНИТЬ</button>
+						<button class="admin-button" type="button" id="playerGiveWorkbenchButton">ВЫДАТЬ ЯЩИК</button>
+						<button class="admin-button" type="button" id="playerDeleteButton" style="background: linear-gradient(180deg,#d96a5d,#8d3d2b); color: #fff; border-color: rgba(233,140,116,.9);">УДАЛИТЬ</button>
+					</div>
+				</form>
+			</section>
+
+			<section class="admin-panel admin-promo-view admin-panel-wide" id="promoPanel">
+				<h2>ПРОМОКОДЫ</h2>
+				<form class="admin-form" id="promoForm">
+					<div class="promo-generator-fields">
+						<label>ТИП
+							<select name="promoType">
+								<option value="topup">ПОПОЛНЕНИЕ</option>
+								<option value="regular">ОБЫЧНЫЙ</option>
+							</select>
+						</label>
+						<label>НАГРАДА
+							<input name="rewardAmount" type="number" min="0" step="1" value="1000" required>
+						</label>
+						<label>ИСПОЛЬЗОВАНИЙ ОДНОГО КОДА
+							<input name="maxUses" type="number" min="1" step="1" value="1" required>
+						</label>
+						<label>КОЛИЧЕСТВО
+							<input name="quantity" type="number" min="1" step="1" value="1" required>
+						</label>
+					</div>
+					<button class="admin-button" type="submit">СГЕНЕРИРОВАТЬ ПРОМОКОДЫ</button>
+				</form>
+				<ul class="admin-list" id="promoCodesList"></ul>
+				<p class="admin-empty" id="promoCodesEmpty">Промокодов пока нет.</p>
+				<div class="promo-activation-log-card">
+					<h2>ЖУРНАЛ АКТИВАЦИЙ</h2>
+					<ul class="admin-list" id="promoActivationLog"></ul>
+					<p class="admin-empty" id="promoActivationLogEmpty">Активаций пока нет.</p>
+				</div>
+			</section>
+
+			<section class="admin-panel admin-workbench-view admin-panel-wide" id="workbenchPanel">
+				<h2>СОДЕРЖИМОЕ ВЕРСТАКА</h2>
+				<form class="admin-form" id="workbenchForm">
+					<div id="workbenchContents"></div>
+					<button class="admin-button" type="button" id="addWorkbenchItem">+ ДОБАВИТЬ ПРЕДМЕТ</button>
+					<button class="admin-button" type="submit">СОХРАНИТЬ СОДЕРЖИМОЕ</button>
+				</form>
+			</section>
+		</div>
+	</div>
+
+	<script>
+		let remoteState = { sections: [], cases: [], promoCodes: [], promoActivationLogs: [], workbenchContents: [] };
+		const sectionsList = document.querySelector("#sectionsList");
+		const casesList = document.querySelector("#casesList");
+		const sectionSelect = document.querySelector("#caseSection");
+		const caseForm = document.querySelector("#caseForm");
+		const caseSubmitButton = document.querySelector("#caseSubmitButton");
+		const cancelCaseEdit = document.querySelector("#cancelCaseEdit");
+		const caseEditTabs = document.querySelector("#caseEditTabs");
+		const addContentButton = document.querySelector("#addContentItem");
+		const caseInfoFields = document.querySelector("#caseInfoFields");
+		const caseContentsPanel = document.querySelector("#caseContentsPanel");
+		let editingCaseId = null;
+		let activeEditTab = "info";
+		const adminViewButtons = [...document.querySelectorAll("[data-admin-view]")];
+		const adminViewPanels = {
+			sections: [...document.querySelectorAll(".admin-section-view")],
+			cases: [...document.querySelectorAll(".admin-case-view")],
+			players: [...document.querySelectorAll(".admin-player-view")],
+			promos: [...document.querySelectorAll(".admin-promo-view")]
+			,workbench: [...document.querySelectorAll(".admin-workbench-view")]
+		};
+
+		const setAdminView = (view) => {
+			Object.entries(adminViewPanels).forEach(([name, panels]) => {
+				panels.forEach((panel) => { panel.hidden = name !== view; });
+			});
+			adminViewButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.adminView === view));
+		};
+
+		adminViewButtons.forEach((button) => button.addEventListener("click", () => setAdminView(button.dataset.adminView)));
+		setAdminView("sections");
+		const editableCaseFields = ["name", "sectionId", "imageFile", "price", "description"];
+
+		const setCaseEditMode = (isEditing) => {
+			editableCaseFields.forEach((fieldName) => {
+				caseForm.elements[fieldName].disabled = isEditing && activeEditTab !== "info";
+			});
+			contentBuilder.querySelectorAll("input, select, button").forEach((field) => {
+				field.disabled = isEditing && activeEditTab !== "contents";
+			});
+			addContentButton.disabled = isEditing && activeEditTab !== "contents";
+			caseInfoFields.hidden = isEditing && activeEditTab !== "info";
+			caseContentsPanel.hidden = isEditing && activeEditTab !== "contents";
+			caseSubmitButton.textContent = isEditing ? (activeEditTab === "contents" ? "СОХРАНИТЬ СОДЕРЖИМОЕ" : "СОХРАНИТЬ ИНФОРМАЦИЮ") : "СОЗДАТЬ КЕЙС";
+			caseEditTabs.hidden = !isEditing;
+			cancelCaseEdit.hidden = !isEditing;
+		};
+
+		const setEditTab = (tab) => {
+			activeEditTab = tab;
+			caseEditTabs.querySelectorAll("[data-edit-tab]").forEach((button) => button.classList.toggle("is-active", button.dataset.editTab === tab));
+			setCaseEditMode(true);
+		};
+
+		caseEditTabs.querySelectorAll("[data-edit-tab]").forEach((button) => button.addEventListener("click", () => setEditTab(button.dataset.editTab)));
+
+		const renderPlayers = () => {
+			const players = Array.isArray(remoteState.players) ? remoteState.players : [];
+			const playersListElement = document.querySelector("#playersList");
+			const playersEmpty = document.querySelector("#playersEmpty");
+			const term = document.querySelector("#playerSearch")?.value.trim().toLowerCase() || "";
+			const filteredPlayers = !term ? players : players.filter((player) => {
+				const haystack = `${player.name || ""} ${player.id || ""}`.toLowerCase();
+				return haystack.includes(term);
+			});
+			playersListElement.replaceChildren();
+			filteredPlayers.forEach((player) => {
+				const item = document.createElement("li");
+				item.className = "admin-list-item";
+				item.innerHTML = `<div><strong>${player.name || "Без имени"}</strong><small>ID: ${player.id} · balance: ${player.balance || 0} · UC: ${player.uc_balance || 0} · time: ${player.time_cards || 0}</small></div><button class="admin-delete" type="button" data-edit-player="${player.id}">РЕДАКТИРОВАТЬ</button>`;
+				playersListElement.append(item);
+			});
+			playersEmpty.hidden = filteredPlayers.length > 0;
+			document.querySelector('[data-stat="players"]').textContent = players.length;
+		};
+
+		const renderPromoCodes = () => {
+			const list = document.querySelector("#promoCodesList");
+			const codes = Array.isArray(remoteState.promoCodes) ? remoteState.promoCodes : [];
+			list.replaceChildren();
+			codes.forEach((promo) => {
+				const item = document.createElement("li");
+				item.className = "admin-list-item";
+				const type = promo.promo_type === "topup" ? "ПОПОЛНЕНИЕ" : "ОБЫЧНЫЙ";
+				item.innerHTML = `<div><strong class="promo-code-value">${promo.code}</strong><small>${type} · награда: ${Number(promo.reward_amount) || 0} · использований: ${Number(promo.uses_count) || 0}/${Number(promo.max_uses) || 1} · ${promo.is_used ? "ИСПОЛЬЗОВАН" : "ДОСТУПЕН"}</small></div><button class="admin-delete" type="button" data-delete-promo="${promo.id}">УДАЛИТЬ</button>`;
+				list.append(item);
+			});
+			document.querySelector("#promoCodesEmpty").hidden = codes.length > 0;
+		};
+
+		const renderPromoActivationLog = (entries = []) => {
+			const list = document.querySelector("#promoActivationLog");
+			list.replaceChildren();
+			entries.forEach((entry) => {
+				const item = document.createElement("li");
+				item.className = "admin-list-item";
+				const type = (entry.promoType || entry.promo_type) === "topup" ? "ПОПОЛНЕНИЕ" : "ОБЫЧНЫЙ";
+				const activatedAt = entry.activatedAt || entry.activated_at;
+				const activatedBy = entry.player || entry.player_name;
+				const playerId = entry.playerId || entry.player_id;
+				const reward = entry.reward ?? entry.reward_amount;
+				item.innerHTML = `<div><strong class="promo-code-value">${entry.code || entry.promo_code || ""}</strong><small>${activatedBy || "Без имени"} · ID: ${playerId || "-"} · ${type} · ${Number(reward) || 0} · ${activatedAt ? new Date(activatedAt).toLocaleString("ru-RU") : ""}</small></div>`;
+				list.append(item);
+			});
+			document.querySelector("#promoActivationLogEmpty").hidden = entries.length > 0;
+		};
+
+		const render = () => {
+			const sections = remoteState.sections;
+			const cases = remoteState.cases;
+			sectionsList.replaceChildren();
+			casesList.replaceChildren();
+			sections.forEach((section) => {
+				const item = document.createElement("li");
+				item.className = "admin-list-item";
+				item.innerHTML = `<div><strong>${section.name}</strong><small>${section.description || "Без описания"}</small></div><button class="admin-delete" type="button" data-delete-section="${section.id}">УДАЛИТЬ</button>`;
+				sectionsList.append(item);
+			});
+			cases.forEach((item) => {
+				const section = sections.find((entry) => entry.id === item.sectionId);
+				const row = document.createElement("li");
+				row.className = "admin-list-item";
+				row.innerHTML = `<div><strong>${item.name}</strong><small>${section?.name || "Без раздела"} · ${item.price || 0} · ${(item.contents || []).length} предметов</small></div><div><button class="admin-delete" type="button" data-edit-case="${item.id}">ИЗМЕНИТЬ</button><button class="admin-delete" type="button" data-delete-case="${item.id}">УДАЛИТЬ</button></div>`;
+				casesList.append(row);
+			});
+			sectionSelect.replaceChildren(new Option(sections.length ? "Выберите раздел" : "Сначала создайте раздел", ""));
+			sections.forEach((section) => sectionSelect.add(new Option(section.name, section.id)));
+			document.querySelector('[data-stat="sections"]').textContent = sections.length;
+			document.querySelector('[data-stat="cases"]').textContent = cases.length;
+			document.querySelector('#sectionsEmpty').hidden = sections.length > 0;
+			document.querySelector('#casesEmpty').hidden = cases.length > 0;
+			renderPlayers();
+			renderPromoCodes();
+			renderPromoActivationLog(remoteState.promoActivationLogs);
+		};
+
+		const refreshFromSupabase = async () => {
+			try {
+				const [state, players, promoCodes, promoActivationLogs, workbenchSettings] = await Promise.all([
+					window.metroDropSupabase.load(),
+					window.metroDropSupabase.loadPlayers().catch(() => []),
+					window.metroDropSupabase.loadPromoCodes().catch(() => []),
+					window.metroDropSupabase.loadPromoActivationLogs().catch(() => []),
+					window.metroDropSupabase.loadWorkbenchSettings().catch(() => ({ contents: [] }))
+				]);
+				remoteState = {
+					sections: state.sections || [],
+					cases: (state.cases || []).map((item) => ({ ...item, sectionId: item.section_id ?? item.sectionId })),
+					players: players || [],
+					promoCodes: promoCodes || [],
+					promoActivationLogs: promoActivationLogs || [],
+					workbenchContents: Array.isArray(workbenchSettings?.contents) ? workbenchSettings.contents : []
+				};
+				workbenchContentBuilder.replaceChildren();
+				remoteState.workbenchContents.forEach((item) => addWorkbenchItem(item));
+				render();
+			} catch (error) {
+				remoteState = { sections: [], cases: [], players: [], promoCodes: [], promoActivationLogs: [], workbenchContents: [] };
+				render();
+				console.error("Supabase unavailable", error);
+			}
+		};
+
+		document.querySelector("#sectionForm").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const form = event.currentTarget;
+			const data = new FormData(form);
+			const section = { id: crypto.randomUUID(), name: data.get("name").trim(), description: data.get("description").trim() };
+			try {
+				const [created] = await window.metroDropSupabase.createSection(section);
+				remoteState.sections.push(created || section);
+				form.reset();
+				render();
+			} catch (error) {
+				console.error("Supabase section creation failed", error);
+			}
+		});
+
+		const createPromoCode = (type, usedCodes) => {
+			const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+			let code = "";
+			do {
+				const values = new Uint32Array(10);
+				crypto.getRandomValues(values);
+				code = `${type === "topup" ? "TOP" : "PROMO"}-${Array.from(values, (value) => alphabet[value % alphabet.length]).join("")}`;
+			} while (usedCodes.has(code));
+			usedCodes.add(code);
+			return code;
+		};
+
+		document.querySelector("#promoForm").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const form = event.currentTarget;
+			const data = new FormData(form);
+			const promoType = data.get("promoType");
+			const rewardAmount = Math.max(0, Number(data.get("rewardAmount")) || 0);
+			const maxUses = Math.max(1, Math.floor(Number(data.get("maxUses")) || 1));
+			const quantity = Math.max(1, Math.floor(Number(data.get("quantity")) || 1));
+			const usedCodes = new Set((remoteState.promoCodes || []).map((promo) => promo.code));
+			const promoCodes = Array.from({ length: quantity }, () => ({
+				id: crypto.randomUUID(),
+				code: createPromoCode(promoType, usedCodes),
+				promo_type: promoType,
+				reward_amount: rewardAmount
+				,max_uses: promoType === "regular" ? maxUses : 1
+			}));
+			try {
+				const created = await window.metroDropSupabase.createPromoCodes(promoCodes);
+				remoteState.promoCodes = [...(created || promoCodes), ...(remoteState.promoCodes || [])];
+				form.elements.quantity.value = "1";
+				renderPromoCodes();
+			} catch (error) {
+				console.error("Supabase promo code creation failed", error);
+			}
+		});
+
+		const readImageFile = (file) => new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.addEventListener("load", () => resolve(reader.result));
+			reader.addEventListener("error", reject);
+			reader.readAsDataURL(file);
+		});
+		const getItemImagePath = (file) => file ? `items/${file.name}` : "";
+
+		const contentBuilder = document.querySelector("#caseContents");
+		const workbenchContentBuilder = document.querySelector("#workbenchContents");
+		const addWorkbenchItem = (initial = {}) => {
+			const row = document.createElement("div");
+			row.className = "workbench-content-row";
+			const catalog = remoteState.cases.flatMap((caseItem) => (caseItem.contents || []).map((item) => typeof item === "string" ? { name: item, image: caseItem.image, rarity: "common" } : item));
+			const itemOptions = catalog.map((item) => `<option value="${item.image}" data-name="${item.name}" data-rarity="${item.rarity || "common"}" data-rarity-label="${item.rarityLabel || "ОБЫЧНЫЙ"}" data-price="${Number(item.price) || 0}" ${initial.rewardType !== "currency" && item.image === initial.image && item.name === initial.name ? "selected" : ""}>${item.name}</option>`).join("");
+			row.innerHTML = `<label>ТИП<select name="workbenchRewardType"><option value="item" ${initial.rewardType !== "currency" ? "selected" : ""}>ПРЕДМЕТ</option><option value="currency" ${initial.rewardType === "currency" ? "selected" : ""}>МЕТРОВАЛЮТА</option></select></label><label data-workbench-value-label>ПРЕДМЕТ<select name="workbenchRewardValue">${itemOptions || "<option value=\"\">Нет предметов</option>"}</select></label><label data-workbench-amount-label hidden>СУММА<input name="workbenchAmount" type="number" min="0" step="1" value="${Number(initial.amount) || 0}"></label><label>ШАНС<input name="workbenchChance" type="number" min="0" step="0.01" required value="${Number(initial.chance) || 1}"></label><button class="admin-delete" type="button">УДАЛИТЬ</button>`;
+			const typeSelect = row.querySelector('[name="workbenchRewardType"]');
+			const valueLabel = row.querySelector("[data-workbench-value-label]");
+			const amountLabel = row.querySelector("[data-workbench-amount-label]");
+			const syncRewardFields = () => {
+				const isCurrency = typeSelect.value === "currency";
+				valueLabel.hidden = isCurrency;
+				amountLabel.hidden = !isCurrency;
+			};
+			typeSelect.addEventListener("change", syncRewardFields);
+			syncRewardFields();
+			row.querySelector(".admin-delete").addEventListener("click", () => row.remove());
+			workbenchContentBuilder.append(row);
+		};
+
+		document.querySelector("#addWorkbenchItem").addEventListener("click", () => addWorkbenchItem());
+		document.querySelector("#workbenchForm").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const contents = [...workbenchContentBuilder.querySelectorAll(".workbench-content-row")].map((row) => {
+				const rewardType = row.querySelector('[name="workbenchRewardType"]').value;
+				const rewardValue = row.querySelector('[name="workbenchRewardValue"]');
+				const selectedItem = rewardValue.selectedOptions[0];
+				return {
+					rewardType,
+					name: rewardType === "currency" ? "" : selectedItem?.dataset.name || "",
+					image: rewardType === "currency" ? "items/money.png" : rewardValue.value,
+					amount: Math.max(0, Number(row.querySelector('[name="workbenchAmount"]').value) || 0),
+					chance: Math.max(0, Number(row.querySelector('[name="workbenchChance"]').value) || 0),
+					rarity: selectedItem?.dataset.rarity || "common",
+					rarityLabel: selectedItem?.dataset.rarityLabel || "ОБЫЧНЫЙ",
+					price: Math.max(0, Number(selectedItem?.dataset.price) || 0)
+				};
+			}).filter((item) => item.chance > 0 && (item.rewardType === "currency" ? item.amount > 0 : item.name && item.image));
+			try {
+				await window.metroDropSupabase.updateWorkbenchSettings(contents);
+				remoteState.workbenchContents = contents;
+			} catch (error) {
+				console.error("Workbench settings save failed", error);
+			}
+		});
+		const addContentItem = (initial = {}) => {
+			const row = document.createElement("div");
+			row.className = "admin-content-row";
+			row.dataset.image = initial.image || "";
+			const existingItems = remoteState.cases.flatMap((caseItem) => (caseItem.contents || []).map((content) => typeof content === "string"
+				? { name: content, image: caseItem.image, price: caseItem.price, rarity: "common" }
+				: content));
+			const existingOptions = existingItems
+				.filter((item, index, items) => item.name && item.image && items.findIndex((candidate) => candidate.name === item.name && candidate.image === item.image) === index)
+				.map((item) => `<option value="${item.image}" data-name="${item.name}" data-price="${Number(item.price) || 0}" data-rarity="${item.rarity || "common"}" ${item.name === initial.name && item.image === initial.image ? "selected" : ""}>${item.name}</option>`)
+				.join("");
+			row.innerHTML = `
+				<div class="admin-content-data">
+					<select name="existingContent" aria-label="Выбрать существующий предмет"><option value="">НОВЫЙ ПРЕДМЕТ</option>${existingOptions}</select>
+					<input name="contentName" type="text" required placeholder="Название предмета" value="${initial.name || ""}">
+					<input name="contentPrice" type="number" min="0" step="1" required placeholder="Цена" value="${Number(initial.price) || 0}">
+					<select name="contentRarity" aria-label="Редкость предмета">
+						<option value="common" ${initial.rarity === "common" ? "selected" : ""}>СЕРЫЙ</option>
+						<option value="rare" ${initial.rarity === "rare" ? "selected" : ""}>ЗЕЛЁНЫЙ</option>
+						<option value="epic" ${initial.rarity === "epic" ? "selected" : ""}>ФИОЛЕТОВЫЙ</option>
+						<option value="blue" ${initial.rarity === "blue" ? "selected" : ""}>СИНИЙ</option>
+						<option value="pink" ${initial.rarity === "pink" ? "selected" : ""}>РОЗОВЫЙ</option>
+						<option value="red" ${initial.rarity === "red" ? "selected" : ""}>КРАСНЫЙ</option>
+						<option value="gold" ${initial.rarity === "gold" ? "selected" : ""}>ЗОЛОТОЙ</option>
+					</select>
+				</div>
+				<div class="admin-content-media">
+					<img class="admin-content-preview" src="${initial.image || "img/logo.png"}" alt="">
+					<input name="contentImage" type="file" accept="image/*">
+				</div>
+				<button class="admin-delete" type="button">УДАЛИТЬ</button>`;
+			row.querySelector('[name="existingContent"]').addEventListener("change", (event) => {
+				const option = event.currentTarget.selectedOptions[0];
+				if (!option?.value) return;
+				row.querySelector('[name="contentName"]').value = option.dataset.name || "";
+				row.querySelector('[name="contentPrice"]').value = option.dataset.price || "0";
+				row.querySelector('[name="contentRarity"]').value = option.dataset.rarity || "common";
+				row.dataset.image = option.value;
+				row.querySelector(".admin-content-preview").src = option.value;
+			});
+			row.querySelector(".admin-delete").addEventListener("click", () => row.remove());
+			row.querySelector('[name="contentImage"]').addEventListener("change", (event) => {
+				const file = event.currentTarget.files[0];
+				if (file) row.querySelector(".admin-content-preview").src = URL.createObjectURL(file);
+			});
+			contentBuilder.append(row);
+		};
+
+		document.querySelector("#addContentItem").addEventListener("click", addContentItem);
+
+		const readContentItems = async () => {
+			const rows = [...contentBuilder.querySelectorAll(".admin-content-row")];
+			return Promise.all(rows.map(async (row) => {
+				const imageFile = row.querySelector('[name="contentImage"]').files[0];
+				const image = imageFile ? getItemImagePath(imageFile) : row.dataset.image;
+				if (!image) throw new Error("Для каждого предмета нужна иконка");
+				const rarity = row.querySelector('[name="contentRarity"]').value;
+				return {
+					name: row.querySelector('[name="contentName"]').value.trim(),
+					price: Number(row.querySelector('[name="contentPrice"]').value) || 0,
+					image,
+					rarity,
+					rarityLabel: { common: "СЕРЫЙ", rare: "ЗЕЛЁНЫЙ", epic: "ФИОЛЕТОВЫЙ", blue: "СИНИЙ", pink: "РОЗОВЫЙ", red: "КРАСНЫЙ", gold: "ЗОЛОТОЙ" }[rarity]
+				};
+			}));
+		};
+
+		caseForm.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const form = event.currentTarget;
+			const data = new FormData(form);
+			const imageFile = data.get("imageFile");
+			if (imageFile && !imageFile.type.startsWith("image/")) return;
+			let contents;
+			try {
+				contents = await readContentItems();
+			} catch (error) {
+				console.error("Case contents are invalid", error);
+				return;
+			}
+			const existing = editingCaseId ? remoteState.cases.find((entry) => entry.id === editingCaseId) : null;
+			const image = imageFile ? await readImageFile(imageFile) : existing?.image;
+			if (!image) return;
+			const sectionId = editingCaseId ? (existing.sectionId || existing.section_id) : data.get("sectionId");
+			const item = { id: editingCaseId || crypto.randomUUID(), sectionId, name: editingCaseId ? existing.name : data.get("name").trim(), image: editingCaseId ? existing.image : image, price: editingCaseId ? Number(existing.price) || 0 : Number(data.get("price")) || 0, contents, description: editingCaseId ? (existing.description || "") : data.get("description").trim() };
+			try {
+				const payload = { section_id: item.sectionId, name: item.name, image: item.image, price: item.price, contents: item.contents, description: item.description };
+				if (editingCaseId) {
+					const [updated] = await window.metroDropSupabase.updateCase(editingCaseId, payload);
+					remoteState.cases = remoteState.cases.map((entry) => entry.id === editingCaseId ? { ...item, ...(updated || {}) } : entry);
+				} else {
+					const [created] = await window.metroDropSupabase.createCase({ id: item.id, ...payload });
+					remoteState.cases.push(created ? { ...item, id: created.id, sectionId: created.section_id } : item);
+				}
+				editingCaseId = null;
+				setCaseEditMode(false);
+				form.reset();
+				contentBuilder.replaceChildren();
+				render();
+			} catch (error) {
+				console.error("Supabase case creation failed", error);
+			}
+		});
+
+		const playerForm = document.querySelector("#playerForm");
+		const playerDeleteButton = document.querySelector("#playerDeleteButton");
+		const playerGiveWorkbenchButton = document.querySelector("#playerGiveWorkbenchButton");
+		const playerSearch = document.querySelector("#playerSearch");
+		let selectedPlayerId = null;
+
+		const loadPlayerIntoForm = (player) => {
+			if (!player) return;
+			selectedPlayerId = player.id;
+			document.querySelector("#playerIdField").value = player.id || "";
+			playerForm.playerName.value = player.name || "";
+			playerForm.playerPassword.value = player.password || "";
+			playerForm.playerBalance.value = Number(player.balance) || 0;
+			playerForm.playerUc.value = Number(player.uc_balance) || 0;
+			playerForm.playerTimeCards.value = Number(player.time_cards) || 0;
+			playerForm.playerCurrencyMode.value = player.currency_mode === "uc" ? "uc" : "metro";
+			playerForm.playerInventory.value = JSON.stringify(Array.isArray(player.inventory) ? player.inventory : [], null, 2);
+			playerDeleteButton.disabled = !player.id;
+		};
+
+		playerSearch?.addEventListener("input", renderPlayers);
+
+		playerForm?.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			if (!selectedPlayerId) return;
+			let inventoryValue = [];
+			try {
+				inventoryValue = JSON.parse(playerForm.playerInventory.value || "[]");
+				if (!Array.isArray(inventoryValue)) {
+					throw new Error("Inventory must be an array");
+				}
+			} catch {
+				alert("Инвентарь должен быть валидным JSON-массивом");
+				return;
+			}
+			const updates = {
+				name: playerForm.playerName.value.trim(),
+				password: playerForm.playerPassword.value,
+				balance: Number(playerForm.playerBalance.value) || 0,
+				uc_balance: Number(playerForm.playerUc.value) || 0,
+				time_cards: Number(playerForm.playerTimeCards.value) || 0,
+				currency_mode: playerForm.playerCurrencyMode.value,
+				inventory: inventoryValue
+			};
+			try {
+				const result = await window.metroDropSupabase.updatePlayer(selectedPlayerId, updates);
+				const updatedPlayer = Array.isArray(result) ? result[0] : result || { id: selectedPlayerId, ...updates };
+				const syncKey = "metroDropPlayerSync";
+				localStorage.setItem(syncKey, JSON.stringify({ playerId: selectedPlayerId, player: updatedPlayer, updatedAt: Date.now() }));
+				window.dispatchEvent(new CustomEvent("metrodrop:player-updated", { detail: updatedPlayer }));
+				await refreshFromSupabase();
+				const current = (remoteState.players || []).find((player) => player.id === selectedPlayerId);
+				if (current) loadPlayerIntoForm(current);
+			} catch (error) {
+				console.error("Supabase player update failed", error);
+			}
+		});
+
+		playerGiveWorkbenchButton?.addEventListener("click", async () => {
+			if (!selectedPlayerId) return;
+			const player = (remoteState.players || []).find((entry) => entry.id === selectedPlayerId);
+			if (!player) return;
+			const missionProgress = {
+				...(player.mission_progress || {}),
+				workbench_ready: true,
+				workbench_started_at: null,
+				workbench_loot_claimed: false
+			};
+			try {
+				const result = await window.metroDropSupabase.updatePlayer(selectedPlayerId, { mission_progress: missionProgress });
+				const updatedPlayer = Array.isArray(result) ? result[0] : result || { ...player, mission_progress: missionProgress };
+				remoteState.players = remoteState.players.map((entry) => entry.id === selectedPlayerId ? updatedPlayer : entry);
+				loadPlayerIntoForm(updatedPlayer);
+			} catch (error) {
+				console.error("Failed to give workbench", error);
+			}
+		});
+
+		playerDeleteButton?.addEventListener("click", async () => {
+			if (!selectedPlayerId) return;
+			if (!window.confirm("Удалить пользователя?")) return;
+			try {
+				await window.metroDropSupabase.deletePlayer(selectedPlayerId);
+				const syncKey = "metroDropPlayerSync";
+				localStorage.setItem(syncKey, JSON.stringify({ playerId: selectedPlayerId, deleted: true, updatedAt: Date.now() }));
+				window.dispatchEvent(new CustomEvent("metrodrop:player-updated", { detail: null }));
+				selectedPlayerId = null;
+				playerForm.reset();
+				document.querySelector("#playerIdField").value = "";
+				await refreshFromSupabase();
+			} catch (error) {
+				console.error("Supabase player delete failed", error);
+			}
+		});
+
+		document.addEventListener("click", (event) => {
+			const sectionButton = event.target.closest("[data-delete-section]");
+			const caseButton = event.target.closest("[data-delete-case]");
+			const promoButton = event.target.closest("[data-delete-promo]");
+			const editButton = event.target.closest("[data-edit-case]");
+			const playerEditButton = event.target.closest("[data-edit-player]");
+			if (playerEditButton) {
+				const player = (remoteState.players || []).find((entry) => entry.id === playerEditButton.dataset.editPlayer);
+				if (player) {
+					loadPlayerIntoForm(player);
+					setAdminView("players");
+					playerForm.scrollIntoView({ behavior: "smooth", block: "start" });
+				}
+				return;
+			}
+			if (editButton) {
+				const item = remoteState.cases.find((entry) => entry.id === editButton.dataset.editCase);
+				if (!item) return;
+				editingCaseId = item.id;
+				activeEditTab = "info";
+				caseForm.elements.name.value = item.name;
+				caseForm.elements.sectionId.value = item.sectionId || item.section_id;
+				caseForm.elements.price.value = item.price || 0;
+				caseForm.elements.description.value = item.description || "";
+				contentBuilder.replaceChildren();
+				(item.contents || []).forEach((content) => addContentItem(typeof content === "string" ? { name: content, image: item.image } : content));
+				setCaseEditMode(true);
+				setEditTab("info");
+				caseForm.scrollIntoView({ behavior: "smooth", block: "start" });
+				return;
+			}
+			if (sectionButton) {
+				const id = sectionButton.dataset.deleteSection;
+				Promise.all([window.metroDropSupabase.deleteSection(id), window.metroDropSupabase.deleteCasesBySection(id)])
+					.catch((error) => console.error("Supabase section delete failed", error))
+					.finally(() => {
+						remoteState.sections = remoteState.sections.filter((item) => item.id !== id);
+						remoteState.cases = remoteState.cases.filter((item) => item.sectionId !== id && item.section_id !== id);
+						render();
+					});
+			}
+			if (caseButton) {
+				const id = caseButton.dataset.deleteCase;
+				window.metroDropSupabase.deleteCase(id)
+					.catch((error) => console.error("Supabase case delete failed", error))
+					.finally(() => {
+						remoteState.cases = remoteState.cases.filter((item) => item.id !== id);
+						render();
+					});
+			}
+			if (promoButton) {
+				const id = promoButton.dataset.deletePromo;
+				window.metroDropSupabase.deletePromoCode(id)
+					.catch((error) => console.error("Supabase promo code delete failed", error))
+					.finally(() => {
+						remoteState.promoCodes = remoteState.promoCodes.filter((item) => item.id !== id);
+						renderPromoCodes();
+					});
+			}
+		});
+
+		cancelCaseEdit.addEventListener("click", () => {
+			editingCaseId = null;
+			activeEditTab = "info";
+			setCaseEditMode(false);
+			caseForm.reset();
+			contentBuilder.replaceChildren();
+		});
+
+		render();
+		refreshFromSupabase();
+	</script>
+</body>
+</html>

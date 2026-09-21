@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Профиль | MetroDrop</title>
+	<link rel="stylesheet" href="style.css">
+	<link rel="preload" as="image" href="img/backround.jpg">
+	<link rel="preload" as="image" href="img/head_backround.png">
+	<link rel="preload" as="image" href="img/menu_backround.png">
+	<script src="supabase.js"></script>
+	<script src="script.js" defer></script>
+</head>
+<body>
+	<div class="background-overlay" aria-hidden="true"></div>
+
+	<header class="site-header">
+		<a class="brand" href="home.html" aria-label="MetroDrop - главная">
+			<img class="brand-logo" src="img/logo.png" alt="MetroDrop">
+		</a>
+
+		<nav class="main-nav" id="main-menu" aria-label="Основная навигация">
+			<a class="nav-link" href="home.html#login">АВТОРИЗАЦИЯ</a>
+			<a class="nav-link" href="home.html#cases">КЕЙСЫ</a>
+			<a class="nav-link" href="home.html#market">РЫНОК</a>
+			<a class="nav-link" href="workbench.html">ВЕРСТАК</a>
+			<a class="nav-link" href="contract.html">КОНТРАКТ</a>
+
+			<div class="mobile-menu-panel" aria-label="Меню пользователя">
+				<a class="mobile-menu-item" href="home.html#login">АВТОРИЗАЦИЯ</a>
+				<a class="mobile-menu-item" href="home.html#cases">КЕЙСЫ</a>
+				<a class="mobile-menu-item" href="workbench.html">ВЕРСТАК</a>
+				<a class="mobile-menu-item" href="upgrade.html">АПГРЕЙД</a>
+				<a class="mobile-menu-item" href="contract.html">КОНТРАКТ</a>
+				<a class="mobile-menu-item gold-menu-item" href="home.html#events">СОБЫТИЯ</a>
+				<img class="mobile-menu-decoration" src="img/img_menu.png" alt="" aria-hidden="true">
+			</div>
+		</nav>
+
+		<div class="header-actions">
+			<div class="balance-card" data-balance-card role="button" tabindex="0" aria-label="Переключить валюту">
+				<span class="balance" data-balance>0</span>
+				<img class="balance-currency" data-balance-currency src="img/metro_money.png" alt="Метровалюты">
+			</div>
+			<a class="login-button" href="home.html#login">ВОЙТИ</a>
+			<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-menu">
+				<span class="menu-icon" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+				<span class="visually-hidden">Открыть меню</span>
+			</button>
+		</div>
+	</header>
+
+	<main class="profile-page">
+		<section class="profile-card" aria-label="Данные профиля">
+			<button class="profile-settings-button" type="button" data-settings aria-label="Настройки" title="Настройки"><img src="img/settings.svg" alt=""></button>
+			<button class="profile-logout-button" type="button" data-logout aria-label="Выйти из аккаунта" title="Выйти из аккаунта"><img src="img/logout.svg" alt=""></button>
+			<div class="profile-avatar-wrap">
+				<button class="profile-avatar-button" type="button" data-avatar-trigger aria-label="Изменить аватар" title="Изменить аватар">
+					<img class="profile-avatar is-pending" data-profile-avatar src="img/logo.png" alt="Аватар пользователя">
+				</button>
+				<input class="profile-avatar-input" data-avatar-input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+			</div>
+			<div class="profile-details">
+				<div class="profile-field">
+					<strong class="profile-name" data-profile="name">ИГРОК</strong>
+				</div>
+				<div class="profile-field">
+					<button class="profile-id" type="button" data-copy-id aria-label="Скопировать ID">
+						<strong data-profile="id">000000</strong>
+					</button>
+					<span class="copy-message" role="status" aria-live="polite"></span>
+				</div>
+				<div class="profile-balances" aria-label="Баланс игрока">
+					<div class="profile-balance-card">
+						<span class="profile-balance-value" data-profile="balance">0</span>
+						<img src="img/metro_money.png" alt="Рубли">
+					</div>
+					<div class="profile-balance-card">
+						<span class="profile-balance-value" data-profile="time-card">0</span>
+						<img src="img/time_card.png" alt="Карты времени">
+					</div>
+					<div class="profile-balance-card">
+						<span class="profile-balance-value" data-profile="uc">0</span>
+						<img src="img/uc.png" alt="UC">
+					</div>
+					<button class="profile-balance-add" type="button" aria-label="Пополнить баланс" title="Пополнить баланс">+</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="profile-stats" aria-label="Статистика игрока">
+			<div class="profile-stat">
+				<span>ОБЩАЯ ПРИБЫЛЬ</span>
+				<strong data-profile-stat="profit">0</strong>
+			</div>
+			<div class="profile-stat">
+				<span>ОТКРЫТО КЕЙСОВ</span>
+				<strong data-profile-stat="cases">0</strong>
+			</div>
+			<div class="profile-stat">
+				<span>ВСЕГО АПГРЕЙДОВ</span>
+				<strong data-profile-stat="upgrades">0</strong>
+			</div>
+		</section>
+
+		<section class="profile-links" aria-label="Разделы профиля">
+			<button class="profile-link-button" type="button">ШКАФ КОЛЛЕКЦИЙ</button>
+			<a class="profile-link-button" href="missions.html">МИССИИ</a>
+		</section>
+
+		<section class="inventory" aria-label="Инвентарь">
+			<div class="inventory-header">
+				<img src="img/head_inventory.jpg" alt="">
+				<span>ИНВЕНТАРЬ</span>
+				<button class="inventory-sell-all" type="button" data-inventory-sell-all>ПРОДАТЬ ВСЕ</button>
+			</div>
+			<div class="inventory-grid">
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+				<div class="inventory-slot" data-inventory-slot></div>
+			</div>
+		</section>
+	</main>
+
+	<div class="inventory-action-modal" data-inventory-action-modal hidden>
+		<div class="inventory-action-panel" role="dialog" aria-modal="true" aria-labelledby="inventory-action-title">
+			<button class="profile-settings-close" type="button" data-inventory-action-close aria-label="Закрыть">×</button>
+			<div class="inventory-action-content">
+				<div class="inventory-action-image-wrap">
+					<img class="inventory-action-image" data-inventory-action-image alt="">
+					<span class="inventory-action-rarity" data-inventory-action-rarity aria-hidden="true"></span>
+				</div>
+				<div class="inventory-action-item-details">
+					<p class="inventory-action-name" data-inventory-action-name></p>
+					<div class="inventory-action-price" aria-label="Цена предмета">
+						<span class="inventory-action-price-row">
+							<img src="img/metro_money.png" alt="Метровалюты" aria-hidden="true">
+							<span data-inventory-action-price-metro>0</span>
+						</span>
+						<span class="inventory-action-price-row">
+							<img src="img/uc.png" alt="UC" aria-hidden="true">
+							<span data-inventory-action-price-uc>0</span>
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="inventory-action-buttons">
+				<button type="button" data-inventory-action="sell">ПРОДАТЬ</button>
+				<button type="button" data-inventory-action="exchange">ОБМЕНЯТЬ НА UC</button>
+					<button type="button" data-inventory-action="disassemble" hidden>РАЗОБРАТЬ</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="profile-settings-modal" data-settings-modal hidden>
+		<div class="profile-settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+			<button class="profile-settings-close" type="button" data-settings-close aria-label="Закрыть">×</button>
+			<h2 id="settings-title">НАСТРОЙКИ</h2>
+			<form data-settings-form novalidate>
+				<div data-settings-account-fields>
+					<label>НИК<input name="name" type="text" autocomplete="nickname"></label>
+					<label>ID<input name="id" type="text" inputmode="numeric" pattern="[0-9]+"></label>
+				</div>
+				<div class="profile-settings-password-fields" data-password-fields hidden>
+					<label>СТАРЫЙ ПАРОЛЬ<input name="oldPassword" type="password" autocomplete="current-password"></label>
+					<label>НОВЫЙ ПАРОЛЬ<input name="newPassword" type="password" autocomplete="new-password"></label>
+					<p class="profile-settings-hint"> </p>
+				</div>
+				<p class="profile-settings-message" data-settings-message role="status" aria-live="polite"></p>
+				<div class="profile-settings-actions">
+					<button class="profile-settings-password-toggle" type="button" data-password-toggle>СМЕНИТЬ ПАРОЛЬ</button>
+					<button class="form-submit profile-settings-save" type="submit">СОХРАНИТЬ</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="top-up-modal" data-top-up-modal hidden>
+		<div class="top-up-panel" role="dialog" aria-modal="true" aria-labelledby="top-up-title">
+			<button class="top-up-close" type="button" data-top-up-close aria-label="Закрыть">×</button>
+			<h2 id="top-up-title">ПОПОЛНЕНИЕ</h2>
+			<div class="top-up-currencies" role="group" aria-label="Выбор валюты">
+				<button class="top-up-currency is-selected" type="button" data-top-up-currency="balance">
+					<img src="img/metro_money.png" alt="">
+					<span>МЕТРОВАЛЮТА</span>
+				</button>
+				<button class="top-up-currency" type="button" data-top-up-currency="time-card">
+					<img src="img/time_card.png" alt="">
+					<span>УСКОРИТЕЛЬ</span>
+				</button>
+			</div>
+			<button class="top-up-promo-button" type="button" data-top-up-promo-open>ПРОМОКОД</button>
+			<div class="top-up-shop" data-top-up-shop="balance" aria-label="Магазин метровалюты">
+				<button class="top-up-shop-card" type="button" data-top-up-amount="100000" data-top-up-url="https://playerok.com/products/3ae9ede65f00-100000-md">
+					<span class="top-up-shop-icon"><img src="items/money.png" alt=""></span>
+					<strong>100.000</strong>
+					<span class="top-up-shop-price">90 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="300000">
+					<span class="top-up-shop-icon"><img src="items/money.png" alt=""></span>
+					<strong>300.000</strong>
+					<span class="top-up-shop-price">270 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="500000">
+					<span class="top-up-shop-icon"><img src="items/money.png" alt=""></span>
+					<strong>500.000</strong>
+					<span class="top-up-shop-price">450 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="1000000">
+					<span class="top-up-shop-icon"><img src="items/money.png" alt=""></span>
+					<strong>1.000.000</strong>
+					<span class="top-up-shop-price">900 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="1500000">
+					<span class="top-up-shop-icon"><img src="items/money.png" alt=""></span>
+					<strong>1.500.000</strong>
+					<span class="top-up-shop-price">1 350 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="2000000">
+					<span class="top-up-shop-icon"><img src="items/money.png" alt=""></span>
+					<strong>2.000.000</strong>
+					<span class="top-up-shop-price">1 800 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="3000000">
+					<span class="top-up-shop-icon"><img src="items/money.png" alt=""></span>
+					<strong>3.000.000</strong>
+					<span class="top-up-shop-price">2 700 Р</span>
+				</button>
+			</div>
+			<div class="top-up-shop" data-top-up-shop="time-card" aria-label="Магазин ускорителей" hidden>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="1500">
+					<span class="top-up-shop-icon"><img src="img/time_card.png" alt=""></span>
+					<strong>1 500</strong>
+					<span class="top-up-shop-price">1 190 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="3000">
+					<span class="top-up-shop-icon"><img src="img/time_card.png" alt=""></span>
+					<strong>3 000</strong>
+					<span class="top-up-shop-price">2 190 Р</span>
+				</button>
+				<button class="top-up-shop-card" type="button" data-top-up-amount="6000">
+					<span class="top-up-shop-icon"><img src="img/time_card.png" alt=""></span>
+					<strong>6 000</strong>
+					<span class="top-up-shop-price">4 490 Р</span>
+				</button>
+			</div>
+			<form class="top-up-promo-form" data-top-up-promo-form hidden>
+				<input id="top-up-promo-code" name="promo-code" type="text" autocomplete="off" placeholder="ВВЕДИТЕ ПРОМОКОД">
+				<div class="top-up-promo-actions">
+					<button class="top-up-promo-submit" type="submit">АКТИВИРОВАТЬ</button>
+				</div>
+				<p class="top-up-promo-message" data-top-up-promo-message role="status" aria-live="polite"></p>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

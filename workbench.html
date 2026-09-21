@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Верстак | MetroDrop</title>
+	<link rel="stylesheet" href="style.css">
+	<link rel="preload" as="image" href="img/backround_workbench.jpg">
+	<link rel="preload" as="image" href="img/head_backround.png">
+	<link rel="preload" as="image" href="img/menu_backround.png">
+	<script src="supabase.js"></script>
+	<script src="script.js" defer></script>
+</head>
+<body class="workbench-body">
+	<div class="background-overlay" aria-hidden="true"></div>
+
+	<header class="site-header">
+		<a class="brand" href="home.html" aria-label="MetroDrop - главная">
+			<img class="brand-logo" src="img/logo.png" alt="MetroDrop">
+		</a>
+
+		<nav class="main-nav" id="main-menu" aria-label="Основная навигация">
+			<a class="nav-link" href="home.html#login">АВТОРИЗАЦИЯ</a>
+			<a class="nav-link" href="home.html#cases">КЕЙСЫ</a>
+			<a class="nav-link" href="home.html#market">РЫНОК</a>
+			<a class="nav-link is-active" href="workbench.html">ВЕРСТАК</a>
+			<a class="nav-link" href="contract.html">КОНТРАКТ</a>
+
+			<div class="mobile-menu-panel" aria-label="Меню пользователя">
+				<a class="mobile-menu-item" href="home.html#login">АВТОРИЗАЦИЯ</a>
+				<a class="mobile-menu-item" href="home.html#cases">КЕЙСЫ</a>
+				<a class="mobile-menu-item" href="workbench.html">ВЕРСТАК</a>
+				<a class="mobile-menu-item" href="upgrade.html">АПГРЕЙД</a>
+				<a class="mobile-menu-item" href="contract.html">КОНТРАКТ</a>
+				<a class="mobile-menu-item gold-menu-item" href="home.html#events">СОБЫТИЯ</a>
+				<img class="mobile-menu-decoration" src="img/img_menu.png" alt="" aria-hidden="true">
+			</div>
+		</nav>
+
+		<div class="header-actions">
+			<div class="time-card-header" aria-label="Валюта для пропуска времени">
+				<span>0</span>
+				<img src="img/time_card.png" alt="card_time">
+			</div>
+			<div class="balance-card" data-balance-card role="button" tabindex="0" aria-label="Переключить валюту">
+				<span class="balance" data-balance>0</span>
+				<img class="balance-currency" data-balance-currency src="img/metro_money.png" alt="Метровалюты">
+			</div>
+			<a class="login-button" href="home.html#login">ВОЙТИ</a>
+			<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-menu">
+				<span class="menu-icon" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+				<span class="visually-hidden">Открыть меню</span>
+			</button>
+		</div>
+	</header>
+
+	<main class="workbench-stage">
+		<div class="workbench-crate-wrap">
+			<div class="workbench-crate holo" role="img" aria-label="Футуристический кейс">
+			<svg viewBox="0 0 792 501" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<defs>
+					<path id="panelPath" d="M 28 68 L 29 60 L 57 53 L 89 54 L 104 65 L 130 64 L 145 51 L 190 49 L 210 58 L 250 57 L 267 48 L 321 47 L 344 49 L 365 43 L 420 41 L 452 45 L 475 37 L 514 38 L 536 32 L 582 34 L 603 30 L 646 33 L 677 40 L 710 45 L 745 57 L 769 73 Q 783 82 784 97 L 785 142 L 791 149 L 791 164 L 785 169 L 785 274 L 791 281 L 791 294 L 785 301 L 785 365 Q 785 395 761 408 L 704 426 L 642 438 L 579 449 L 516 458 L 452 466 L 387 475 L 321 484 L 255 493 Q 205 500 168 500 Q 139 500 125 480 L 106 454 L 87 429 L 67 402 L 49 379 Q 40 365 40 343 L 34 306 L 34 173 L 27 164 L 27 148 L 33 140 L 33 98 Q 29 82 28 68 Z" />
+					<clipPath id="clipPanel"><use href="#panelPath" /></clipPath>
+					<linearGradient id="panelFill" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0%" stop-color="#8eb9d5" stop-opacity=".30" />
+						<stop offset="30%" stop-color="#718ba1" stop-opacity=".25" />
+						<stop offset="57%" stop-color="#71899d" stop-opacity=".27" />
+						<stop offset="78%" stop-color="#789db7" stop-opacity=".29" />
+						<stop offset="100%" stop-color="#a4d6ed" stop-opacity=".38" />
+					</linearGradient>
+					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" /></filter>
+				</defs>
+				<use href="#panelPath" fill="none" stroke="#63baff" stroke-width="15" opacity=".16" filter="url(#glow)" />
+				<use href="#panelPath" class="panel" />
+				<use href="#panelPath" fill="none" stroke="#86caff" stroke-width="4" opacity=".32" />
+				<use href="#panelPath" fill="none" stroke="#8bc9f3" stroke-width="2" opacity=".85" />
+			</svg>
+			<div class="holo-content" aria-hidden="true">
+				<div class="scanlines"></div>
+				<div class="horizontal-noise"><div class="noise"></div><div class="noise"></div><div class="noise"></div><div class="noise"></div><div class="noise"></div></div>
+				<div class="long-noise one"></div><div class="long-noise two"></div>
+				<div class="static-line"></div><div class="static-line"></div><div class="static-line"></div>
+			</div>
+			<img class="workbench-box" src="img/box.png" alt="Ящик" hidden>
+			</div>
+			<div class="workbench-reward-controls">
+				<button class="workbench-reward-button workbench-get-button" type="button">ПОЛУЧИТЬ</button>
+				<button class="workbench-reward-button workbench-disassemble-button" type="button" hidden>
+					<span class="workbench-disassemble-label">РАЗОБРАТЬ</span>
+					<span class="workbench-timer">24:00:00</span>
+				</button>
+				<button class="workbench-reward-button workbench-boost-button" type="button" hidden>
+					<span class="workbench-boost-label">УСКОРЕНИЕ НА 5Ч</span>
+					<span class="workbench-boost-cost"><span>1</span><img src="img/time_card.png" alt="time card"></span>
+					<span class="workbench-open-label" hidden>ОТКРЫТЬ</span>
+				</button>
+			</div>
+		</div>
+	</main>
+
+	<div class="workbench-loot-modal" data-loot-modal hidden>
+		<div class="workbench-loot-screen" role="dialog" aria-modal="true" aria-label="Полученные награды">
+			<div class="workbench-loot-rewards" data-workbench-loot-rewards></div>
+			<div class="workbench-loot-continue">НАЖМИТЕ ДЛЯ ПРОДОЛЖЕНИЯ</div>
+		</div>
+	</div>
+
+</body>
+</html>

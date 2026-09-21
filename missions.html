@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Миссии | MetroDrop</title>
+	<link rel="stylesheet" href="style.css">
+	<link rel="preload" as="image" href="img/mission_backround.jpg">
+	<script src="supabase.js"></script>
+	<script src="script.js" defer></script>
+</head>
+<body class="missions-body">
+	<div class="background-overlay" aria-hidden="true"></div>
+
+	<header class="site-header">
+		<a class="brand" href="home.html" aria-label="MetroDrop - главная">
+			<img class="brand-logo" src="img/logo.png" alt="MetroDrop">
+		</a>
+
+		<nav class="main-nav" id="main-menu" aria-label="Основная навигация">
+			<a class="nav-link" href="home.html#login">АВТОРИЗАЦИЯ</a>
+			<a class="nav-link" href="home.html#cases">КЕЙСЫ</a>
+			<a class="nav-link" href="home.html#market">РЫНОК</a>
+			<a class="nav-link" href="workbench.html">ВЕРСТАК</a>
+			<a class="nav-link" href="contract.html">КОНТРАКТ</a>
+			<div class="mobile-menu-panel" aria-label="Меню пользователя">
+				<a class="mobile-menu-item" href="home.html#login">АВТОРИЗАЦИЯ</a>
+				<a class="mobile-menu-item" href="home.html#cases">КЕЙСЫ</a>
+				<a class="mobile-menu-item" href="workbench.html">ВЕРСТАК</a>
+				<a class="mobile-menu-item" href="upgrade.html">АПГРЕЙД</a>
+				<a class="mobile-menu-item" href="contract.html">КОНТРАКТ</a>
+				<a class="mobile-menu-item gold-menu-item" href="missions.html">СОБЫТИЯ</a>
+				<img class="mobile-menu-decoration" src="img/img_menu.png" alt="" aria-hidden="true">
+			</div>
+		</nav>
+
+		<div class="header-actions">
+			<a class="login-button" href="home.html#login">ВОЙТИ</a>
+			<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-menu">
+				<span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+				<span class="visually-hidden">Открыть меню</span>
+			</button>
+		</div>
+	</header>
+
+	<main class="missions-page">
+		<section class="mission-section" data-mission-cycle="once" aria-labelledby="one-time-missions-title">
+			<h2 class="mission-section-title" id="one-time-missions-title">РАЗОВЫЕ МИССИИ</h2>
+			<div class="missions-grid">
+				<article class="profile-link-button mission-entry" data-mission-key="topups_1" data-mission-target="1">
+					<strong>ПОПОЛНЕНИЕ</strong>
+					<span>Сделайте первое пополнение</span>
+					<div class="mission-reward inventory-slot" aria-label="Награда: верстак">
+						<img class="inventory-item-image" src="items/workbench_ico.png" alt="Верстак">
+					</div>
+					<a class="mission-go-button" href="profile.html">ПЕРЕЙТИ</a>
+				</article>
+			</div>
+		</section>
+
+		<section class="mission-section" data-mission-cycle="daily" aria-labelledby="daily-missions-title">
+			<h2 class="mission-section-title" id="daily-missions-title">ЕЖЕДНЕВНЫЕ МИССИИ</h2>
+			<div class="missions-grid">
+			<article class="profile-link-button mission-entry" data-mission-key="cases_10" data-mission-target="10">
+				<strong>ОТКРЫТИЕ КЕЙСОВ</strong>
+				<span>Откройте 10 кейсов</span>
+				<div class="mission-reward inventory-slot" aria-label="Награда: 10.000 метровалюты">
+					<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+					<strong>10.000</strong>
+				</div>
+				<a class="mission-go-button" href="home.html#cases">ПЕРЕЙТИ</a>
+			</article>
+			<article class="profile-link-button mission-entry" data-mission-key="cases_3" data-mission-target="3">
+				<strong>ОТКРЫТИЕ КЕЙСОВ</strong>
+				<span>Откройте 3 кейса</span>
+				<div class="mission-reward inventory-slot" aria-label="Награда: 3.000 метровалюты">
+					<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+					<strong>3.000</strong>
+				</div>
+				<a class="mission-go-button" href="home.html#cases">ПЕРЕЙТИ</a>
+			</article>
+			<article class="profile-link-button mission-entry" data-mission-key="upgrades_15" data-mission-target="15">
+				<strong>АПГРЕЙД</strong>
+				<span>Выиграйте 15 апгрейдов</span>
+				<div class="mission-reward inventory-slot" aria-label="Награда: 15.000 метровалюты">
+					<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+					<strong>15.000</strong>
+				</div>
+				<a class="mission-go-button" href="home.html#upgrade">ПЕРЕЙТИ</a>
+			</article>
+			<article class="profile-link-button mission-entry" data-mission-key="upgrades_5" data-mission-target="5">
+				<strong>АПГРЕЙД</strong>
+				<span>Выиграйте 5 апгрейдов</span>
+				<div class="mission-reward inventory-slot" aria-label="Награда: 4.500 метровалюты">
+					<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+					<strong>4.500</strong>
+				</div>
+				<a class="mission-go-button" href="home.html#upgrade">ПЕРЕЙТИ</a>
+			</article>
+			<article class="profile-link-button mission-entry" data-mission-key="contracts_10" data-mission-target="10">
+				<strong>КОНТРАКТ</strong>
+				<span>Сделайте 10 контрактов</span>
+				<div class="mission-reward inventory-slot" aria-label="Награда: 50.000 метровалюты">
+					<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+					<strong>50.000</strong>
+				</div>
+				<a class="mission-go-button" href="contract.html">ПЕРЕЙТИ</a>
+			</article>
+			<article class="profile-link-button mission-entry" data-mission-key="contracts_3" data-mission-target="3">
+				<strong>КОНТРАКТ</strong>
+				<span>Сделайте 3 контракта</span>
+				<div class="mission-reward inventory-slot" aria-label="Награда: 3.000 метровалюты">
+					<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+					<strong>3.000</strong>
+				</div>
+				<a class="mission-go-button" href="contract.html">ПЕРЕЙТИ</a>
+			</article>
+			</div>
+		</section>
+
+		<section class="mission-section" data-mission-cycle="weekly" aria-labelledby="weekly-missions-title">
+			<h2 class="mission-section-title" id="weekly-missions-title">ЕЖЕНЕДЕЛЬНЫЕ МИССИИ</h2>
+			<div class="missions-grid">
+				<article class="profile-link-button mission-entry" data-mission-key="logins_7" data-mission-target="7">
+					<strong>ВХОД</strong>
+					<span>Входите 7 дней подряд</span>
+					<div class="mission-reward inventory-slot" aria-label="Награда: верстак">
+						<img class="inventory-item-image" src="items/workbench_ico.png" alt="Верстак">
+					</div>
+					<a class="mission-go-button" href="profile.html">ПЕРЕЙТИ</a>
+				</article>
+				<article class="profile-link-button mission-entry" data-mission-key="cases_50" data-mission-target="50">
+					<strong>ОТКРЫТИЕ КЕЙСОВ</strong>
+					<span>Откройте 50 кейсов</span>
+					<div class="mission-reward inventory-slot" aria-label="Награда: 50.000 метровалюты">
+						<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+						<strong>50.000</strong>
+					</div>
+					<a class="mission-go-button" href="home.html#cases">ПЕРЕЙТИ</a>
+				</article>
+				<article class="profile-link-button mission-entry" data-mission-key="contracts_30" data-mission-target="30">
+					<strong>КОНТРАКТ</strong>
+					<span>Сделайте 30 контрактов</span>
+					<div class="mission-reward inventory-slot" aria-label="Награда: 50.000 метровалюты">
+						<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+						<strong>50.000</strong>
+					</div>
+					<a class="mission-go-button" href="contract.html">ПЕРЕЙТИ</a>
+				</article>
+				<article class="profile-link-button mission-entry" data-mission-key="upgrades_30" data-mission-target="30">
+					<strong>АПГРЕЙД</strong>
+					<span>Выиграйте 30 апгрейдов</span>
+					<div class="mission-reward inventory-slot" aria-label="Награда: 50.000 метровалюты">
+						<img class="inventory-item-image" src="items/money.png" alt="Метровалюта">
+						<strong>50.000</strong>
+					</div>
+					<a class="mission-go-button" href="upgrade.html">ПЕРЕЙТИ</a>
+				</article>
+			</div>
+		</section>
+	</main>
+
+</body>
+</html>
